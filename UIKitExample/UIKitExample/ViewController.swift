@@ -8,26 +8,46 @@
 import UIKit
 
 class ViewController: UIViewController {
+  let outsideView = MyView(name: "Outside Hierarchy View")
+
   override func viewDidLoad() {
     super.viewDidLoad()
+    view = MyView(name: "Inside Hierarchy View")
 
-    view.backgroundColor = .green
+    Task {
+      let colors: [UIColor] = [.green, .blue, .red, .yellow, .brown, .cyan, .gray]
+
+      for _ in 0..<10 {
+        try? await Task.sleep(for: .seconds(0.5))
+
+        let color = colors.randomElement()!
+        print("set new background color to")
+        view.backgroundColor = color
+        outsideView.backgroundColor = color
+      }
+    }
   }
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    print("--- viewWillAppear ---")
-    print("View added to hierarchy: \(view.window != nil)")
-    print("Trait collection: \(traitCollection)")
-    print("View frame: \(view.frame)")
-    print("Safe area insets: \(view.safeAreaInsets)")
+}
+
+final class MyView: UIView {
+  let name: String
+
+  override func setNeedsDisplay() {
+    super.setNeedsDisplay()
+    print("(\(name))", #function, )
   }
 
-  override func viewIsAppearing(_ animated: Bool) {
-    super.viewIsAppearing(animated)
-    print("\n--- viewIsAppearing ---")
-    print("View added to hierarchy: \(view.window != nil)")
-    print("Trait collection: \(traitCollection)")
-    print("View frame: \(view.frame)")
-    print("Safe area insets: \(view.safeAreaInsets)")
+  override func draw(_ rect: CGRect) {
+    super.draw(rect)
+    print("(\(name))", #function, )
+  }
+
+  init(name: String) {
+    self.name = name
+    super.init(frame: .zero)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
 }
