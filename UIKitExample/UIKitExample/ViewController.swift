@@ -8,46 +8,48 @@
 import UIKit
 
 class ViewController: UIViewController {
-  let outsideView = MyView(name: "Outside Hierarchy View")
+  var redView: UIView! = nil
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view = MyView(name: "Inside Hierarchy View")
+    view.backgroundColor = .white
+
+    redView = UIView()
+    view.addSubview(redView)
+
+    redView.backgroundColor = .red
+    redView.bounds = CGRect(x: 0, y: 0, width: 100, height: 200)
+    redView.center = view.center
+
+    // Apply transform before adding to hierarchy
+    print("Frame before adding to hierarchy:", redView.frame)
+    redView.transform = CGAffineTransform(rotationAngle: CGFloat.pi/2)
+    print("Frame after adding to hierarchy:", redView.frame)
+
+    redView.layoutIfNeeded()
+    redView.setNeedsDisplay()
 
     Task {
-      let colors: [UIColor] = [.green, .blue, .red, .yellow, .brown, .cyan, .gray]
-
-      for _ in 0..<10 {
-        try? await Task.sleep(for: .seconds(0.5))
-
-        let color = colors.randomElement()!
-        print("set new background color to")
-        view.backgroundColor = color
-        outsideView.backgroundColor = color
+      try? await Task.sleep(for: .seconds(1))
+      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
+        self?.redView.transform = CGAffineTransform(rotationAngle: 0)
+      }
+      try? await Task.sleep(for: .seconds(1))
+      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
+        self?.redView.transform = CGAffineTransform(rotationAngle: -.pi/2)
+      }
+      try? await Task.sleep(for: .seconds(1))
+      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
+        self?.redView.transform = CGAffineTransform(rotationAngle: -.pi)
       }
     }
   }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+  }
 }
 
-final class MyView: UIView {
-  let name: String
-
-  override func setNeedsDisplay() {
-    super.setNeedsDisplay()
-    print("(\(name))", #function, )
-  }
-
-  override func draw(_ rect: CGRect) {
-    super.draw(rect)
-    print("(\(name))", #function, )
-  }
-
-  init(name: String) {
-    self.name = name
-    super.init(frame: .zero)
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
+#Preview {
+  ViewController()
 }
