@@ -9,50 +9,76 @@ import UIKit
 
 class ViewController: UIViewController {
 
+  let data = [
+    [ "Pacman", "Space Invaders", "Space Patrol"],
+    [ "Pacman 1", "Space Invaders 1", "Space Patrol 1"]
+  ]
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    // The Collection View is a scrollable view frame
-    let collectionView = UICollectionView(
-      frame: .zero,
-      collectionViewLayout: UICollectionViewFlowLayout()
-    )
+    // 1. Table view itself is a scrollable view frame
+    let tableView = UITableView()
 
-    // Data source
-    collectionView.dataSource = self
+    // 2. delegate to handle
+    //   - interaction: selection, swipe action, editing
+    //   - headers and footer
+    //   - heigh estimation
+    //   - row indentation
+    tableView.delegate = self
 
-    // UI Presentation
-    // 1. layout
-    // 2. cell
-    collectionView.delegate = self
-    collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "CELL")
+    // 3. data source provides data
+    tableView.dataSource = self
 
-    self.view.addSubview(collectionView)
+    // 4. cell present items' data
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CELL")
 
-    collectionView.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(tableView)
+    tableView.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
-      collectionView.topAnchor.constraint(equalTo: self.view.topAnchor),
-      collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-      collectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
-      collectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+      tableView.topAnchor.constraint(equalTo: view.topAnchor),
+      tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+      tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
     ])
   }
 }
 
-extension ViewController: UICollectionViewDelegateFlowLayout {
-  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    return .init(width: collectionView.frame.width/4, height: 200)
+extension ViewController: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    print("Table did select \(data[indexPath.item])")
+  }
+
+  func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    let label = UILabel()
+    label.font = .systemFont(ofSize: 18)
+    label.backgroundColor = .systemBlue.withAlphaComponent(0.3)
+    label.text = "Section \(section)"
+
+    return label
+  }
+
+  func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    let label = UILabel()
+    label.font = .systemFont(ofSize: 18)
+    label.backgroundColor = .systemYellow.withAlphaComponent(0.3)
+    label.text = "Footer Section \(section)"
+
+    return label
+  }
+
+  func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
+    indexPath.section + indexPath.item
   }
 }
 
-extension ViewController: UICollectionViewDataSource {
-  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    30
-  }
+extension ViewController: UITableViewDataSource {
+  func numberOfSections(in tableView: UITableView) -> Int { 2 }
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { data[section].count }
 
-  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CELL", for: indexPath)
-    cell.backgroundColor = .systemBlue
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "CELL", for: indexPath)
+    cell.textLabel?.text = data[indexPath.section][indexPath.item]
 
     return cell
   }
