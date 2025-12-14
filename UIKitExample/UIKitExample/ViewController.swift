@@ -8,45 +8,60 @@
 import UIKit
 
 class ViewController: UIViewController {
-  var redView: UIView! = nil
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .white
 
-    redView = UIView()
-    view.addSubview(redView)
+    let collectionView = UICollectionView(
+      frame: view.window?.windowScene?.screen.bounds ?? .zero,
+      collectionViewLayout: UICollectionViewFlowLayout()
+    )
+    collectionView.backgroundColor = .red
+    self.view.addSubview(collectionView)
 
-    redView.backgroundColor = .red
-    redView.bounds = CGRect(x: 0, y: 0, width: 100, height: 200)
-    redView.center = view.center
+    print(
+      #function,
+      "view.window?.windowScene?.screen.bounds:",
+      String(describing: view.window?.windowScene?.screen.bounds)
+    )
+  }
 
-    // Apply transform before adding to hierarchy
-    print("Frame before adding to hierarchy:", redView.frame)
-    redView.transform = CGAffineTransform(rotationAngle: CGFloat.pi/2)
-    print("Frame after adding to hierarchy:", redView.frame)
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
 
-    redView.layoutIfNeeded()
-    redView.setNeedsDisplay()
+    print(
+      #function,
+      "view.window?.windowScene?.screen.bounds:",
+      String(describing: view.window?.windowScene?.screen.bounds)
+    )
+  }
 
-    Task {
-      try? await Task.sleep(for: .seconds(1))
-      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
-        self?.redView.transform = CGAffineTransform(rotationAngle: 0)
-      }
-      try? await Task.sleep(for: .seconds(1))
-      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
-        self?.redView.transform = CGAffineTransform(rotationAngle: -.pi/2)
-      }
-      try? await Task.sleep(for: .seconds(1))
-      UIView.animate(withDuration: 0.1, delay: 0) { [weak self] in
-        self?.redView.transform = CGAffineTransform(rotationAngle: -.pi)
-      }
-    }
+  override func viewIsAppearing(_ animated: Bool) {
+    super.viewIsAppearing(animated)
+
+    print(
+      #function,
+      "view.window?.windowScene?.screen.bounds:",
+      String(describing: view.window?.windowScene?.screen.bounds)
+    )
+  }
+
+  override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+    print(
+      #function,
+      "view.window?.windowScene?.screen.bounds:",
+      String(describing: view.window?.windowScene?.screen.bounds)
+    )
   }
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    print(
+      #function,
+      "view.window?.windowScene?.screen.bounds",
+      String(describing: view.window?.windowScene?.screen.bounds)
+    )
   }
 }
 
